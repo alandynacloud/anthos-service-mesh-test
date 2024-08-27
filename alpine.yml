@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine
+  labels:
+    app: alpine
+spec:
+  containers:
+  - name: alpine
+    image: quay.io/ict39/alpine.sshd
+#    image: asia.gcr.io/dyncloud-lab-20210423-ark/alpine
+#    image: asia-east1-docker.pkg.dev/dyncloud-lab-20221201/alan-snooze-test/snooze:v2
+    command: ["/bin/bash"]
+    args: ["-c", "sleep infinity"]
+    stdin: true
+    tty: true
