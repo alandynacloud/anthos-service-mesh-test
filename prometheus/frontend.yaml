@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      automountServiceAccountToken: true
+      nodeSelector:
+        kubernetes.io/os: linux
+        kubernetes.io/arch: amd64
+      containers:
+      - name: frontend
+        image: "gke.gcr.io/prometheus-engine/frontend:v0.4.3-gke.0"
+        args:
+        - "--web.listen-address=:9090"
+        - "--query.project-id=dyncloud-lab-20221201"
+        - "--query.credentials-file=/gmp/key.json"
+        ports:
+        - name: web
+          containerPort: 9090
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: web
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: web
+        volumeMounts:
+        - name: gmp-sa
+          mountPath: /gmp
+          readOnly: true
+      volumes:
+      - name: gmp-sa
+        secret:
+          secretName: gmp-test-sa
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+#  clusterIP: None
+  selector:
+    app: frontend
+  ports:
+  - name: web
+    port: 9090
+  type: LoadBalancer

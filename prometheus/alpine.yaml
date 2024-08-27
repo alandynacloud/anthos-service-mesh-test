@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine
+  labels:
+    app: alpine
+spec:
+  containers:
+  - name: alpine
+    image: quay.io/ict39/alpine.sshd
+#    image: asia.gcr.io/dyncloud-lab-20210423-ark/alpine
+    #command: ["/bin/bash"]
+    #args: ["-c", "sleep 5"]
+    stdin: true
+    tty: true
+    volumeMounts:
+    - name: gmp-sa
+      mountPath: /gmp
+      readOnly: true
+  volumes:
+    - name: gmp-sa
+      secret:
+        secretName: gmp-test-sa
+
+
+
+
+#  restartPolicy: Never
+#  nodeSelector:
+#    kubernetes.io/hostname : gke-cluster-1-pool-1-fae359ec-00vn
+#    resources:  
+#      limits:
+#        memory: "1024Mi"
+#        cpu: "1.25"
